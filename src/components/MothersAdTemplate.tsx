@@ -1,22 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Upload, Move, Type, Trash2 } from 'lucide-react';
-import tulipsImage from '@/assets/tulips-footer.jpg';
-import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-
-interface TextElement {
-  id: string;
-  type: 'heading' | 'subheading' | 'paragraph' | 'discount' | 'button' | 'link';
-  content: string;
-  x: number;
-  y: number;
-  fontSize: string;
-  fontFamily: string;
-  color: string;
-  fontWeight: string;
-}
+import tulipsImage from '@/assets/tulips-footer.jpg';
+import { DraggableElement, TextElement } from './DraggableElement';
+import { ControlPanel } from './ControlPanel';
 
 interface AdContent {
   backgroundColor: string;
@@ -30,108 +17,6 @@ interface DragItem {
   x: number;
   y: number;
 }
-
-const DraggableElement: React.FC<{
-  element: TextElement;
-  isEditing: boolean;
-  onUpdate: (id: string, updates: Partial<TextElement>) => void;
-  onDelete: (id: string) => void;
-}> = ({ element, isEditing, onUpdate, onDelete }) => {
-  const [{ isDragging }, drag] = useDrag({
-    type: 'element',
-    item: { type: 'element', id: element.id, x: element.x, y: element.y },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
-
-  const handleContentChange = (content: string) => {
-    onUpdate(element.id, { content });
-  };
-
-  const getElementStyles = () => {
-    const baseStyles = {
-      position: 'absolute' as const,
-      left: `${element.x}%`,
-      top: `${element.y}%`,
-      color: element.color,
-      fontSize: element.fontSize,
-      fontFamily: element.fontFamily,
-      fontWeight: element.fontWeight,
-      cursor: isEditing ? 'move' : 'default',
-      opacity: isDragging ? 0.5 : 1,
-      maxWidth: '300px',
-      wordWrap: 'break-word' as const,
-    };
-
-    if (element.type === 'button') {
-      return {
-        ...baseStyles,
-        backgroundColor: element.color,
-        color: 'white',
-        padding: '8px 16px',
-        borderRadius: '4px',
-        border: 'none',
-        fontWeight: 'bold',
-      };
-    }
-
-    return baseStyles;
-  };
-
-  const renderElement = () => {
-    if (element.type === 'button') {
-      return (
-        <button style={getElementStyles()}>
-          {isEditing ? (
-            <input
-              value={element.content}
-              onChange={(e) => handleContentChange(e.target.value)}
-              className="bg-transparent border-none outline-none text-white"
-              style={{ color: 'white' }}
-            />
-          ) : (
-            element.content
-          )}
-        </button>
-      );
-    }
-
-    const Tag = element.type === 'heading' ? 'h1' : 
-               element.type === 'subheading' ? 'h2' : 
-               element.type === 'discount' ? 'div' : 'p';
-
-    return (
-      <Tag style={getElementStyles()}>
-        {isEditing ? (
-          <input
-            value={element.content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            className="bg-transparent border-none outline-none"
-            style={{ color: element.color, fontSize: 'inherit', fontFamily: 'inherit' }}
-          />
-        ) : (
-          element.content
-        )}
-      </Tag>
-    );
-  };
-
-  return (
-    <div ref={isEditing ? drag : undefined}>
-      {renderElement()}
-      {isEditing && (
-        <button
-          onClick={() => onDelete(element.id)}
-          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs"
-          style={{ left: `${element.x + 20}%`, top: `${element.y - 2}%` }}
-        >
-          <Trash2 size={12} />
-        </button>
-      )}
-    </div>
-  );
-};
 
 const MothersAdTemplate = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -216,23 +101,13 @@ const MothersAdTemplate = () => {
     drop: (item: DragItem, monitor) => {
       const delta = monitor.getDifferenceFromInitialOffset();
       if (delta) {
-        const newX = Math.max(0, Math.min(90, item.x + (delta.x / window.innerWidth) * 100));
-        const newY = Math.max(0, Math.min(90, item.y + (delta.y / window.innerHeight) * 100));
+        const newX = Math.max(0, Math.min(90, item.x + (delta.x / 600) * 100));
+        const newY = Math.max(0, Math.min(90, item.y + (delta.y / 600) * 100));
         
         updateElement(item.id, { x: newX, y: newY });
       }
     },
   });
-
-  const fonts = [
-    'Arial, sans-serif',
-    'Dancing Script, cursive',
-    'Playfair Display, serif',
-    'Georgia, serif',
-    'Times New Roman, serif',
-    'Helvetica, sans-serif',
-    'Roboto, sans-serif'
-  ];
 
   const updateElement = (id: string, updates: Partial<TextElement>) => {
     setContent(prev => ({
@@ -306,140 +181,24 @@ const MothersAdTemplate = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="max-w-4xl mx-auto">
-        {/* Controls */}
-        <div className="mb-6 p-4 bg-white rounded-lg shadow-soft">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-mothers-day-gray">Mother's Day Ad Template</h2>
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => setIsEditing(!isEditing)}
-                variant={isEditing ? "destructive" : "default"}
-              >
-                {isEditing ? "Preview" : "Edit"}
-              </Button>
-            </div>
-          </div>
-          
-          {isEditing && (
-            <div className="space-y-4">
-              {/* Add Elements */}
-              <div className="flex flex-wrap gap-2">
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => addNewElement('heading')}
-                  className="flex items-center gap-1"
-                >
-                  <Plus size={16} /> Heading
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => addNewElement('paragraph')}
-                  className="flex items-center gap-1"
-                >
-                  <Type size={16} /> Text
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => addNewElement('button')}
-                  className="flex items-center gap-1"
-                >
-                  <Plus size={16} /> Button
-                </Button>
-                <Button 
-                  size="sm" 
-                  variant="outline"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-1"
-                >
-                  <Upload size={16} /> Change Image
-                </Button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </div>
+        <ControlPanel
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
+          onAddElement={addNewElement}
+          onImageUpload={() => fileInputRef.current?.click()}
+          backgroundColor={content.backgroundColor}
+          onBackgroundChange={(color) => setContent(prev => ({ ...prev, backgroundColor: color }))}
+          selectedElement={selectedElementData}
+          onUpdateElement={updateElement}
+        />
 
-              {/* Background Controls */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Background Color</label>
-                  <input
-                    type="color"
-                    value={content.backgroundColor}
-                    onChange={(e) => setContent(prev => ({ ...prev, backgroundColor: e.target.value }))}
-                    className="w-full h-10 border rounded-md"
-                  />
-                </div>
-              </div>
-
-              {/* Element Properties */}
-              {selectedElementData && (
-                <div className="border-t pt-4">
-                  <h3 className="font-bold mb-2">Selected Element Properties</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Font Family</label>
-                      <Select 
-                        value={selectedElementData.fontFamily} 
-                        onValueChange={(value) => updateElement(selectedElement, { fontFamily: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {fonts.map(font => (
-                            <SelectItem key={font} value={font}>{font.split(',')[0]}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Font Size</label>
-                      <input
-                        type="text"
-                        value={selectedElementData.fontSize}
-                        onChange={(e) => updateElement(selectedElement, { fontSize: e.target.value })}
-                        className="w-full p-2 border rounded-md"
-                        placeholder="1rem, 24px, etc."
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Color</label>
-                      <input
-                        type="color"
-                        value={selectedElementData.color}
-                        onChange={(e) => updateElement(selectedElement, { color: e.target.value })}
-                        className="w-full h-10 border rounded-md"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Font Weight</label>
-                      <Select 
-                        value={selectedElementData.fontWeight} 
-                        onValueChange={(value) => updateElement(selectedElement, { fontWeight: value })}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="normal">Normal</SelectItem>
-                          <SelectItem value="bold">Bold</SelectItem>
-                          <SelectItem value="lighter">Lighter</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="hidden"
+        />
 
         {/* Ad Template */}
         <div 
