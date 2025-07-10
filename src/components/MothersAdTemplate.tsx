@@ -12,6 +12,7 @@ interface AdContent {
   backgroundColor: string;
   fontColor: string;
   buttonColor: string;
+  backgroundImage: string;
 }
 
 const MothersAdTemplate = () => {
@@ -25,11 +26,24 @@ const MothersAdTemplate = () => {
     footerLink: "flowerstomom.site.com",
     backgroundColor: "#fce7f3", // Light pink
     fontColor: "#be185d", // Dark pink
-    buttonColor: "#ec4899" // Medium pink
+    buttonColor: "#ec4899", // Medium pink
+    backgroundImage: ""
   });
 
   const handleContentChange = (field: keyof AdContent, value: string) => {
     setContent(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        handleContentChange('backgroundImage', result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const hearts = Array.from({ length: 8 }, (_, i) => (
@@ -137,6 +151,15 @@ const MothersAdTemplate = () => {
                 className="w-full h-10 border rounded-md"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Background Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -144,8 +167,22 @@ const MothersAdTemplate = () => {
       {/* Ad Template */}
       <div 
         className="relative w-full h-[600px] rounded-lg shadow-soft overflow-hidden"
-        style={{ backgroundColor: content.backgroundColor }}
+        style={{ 
+          backgroundColor: content.backgroundColor,
+          backgroundImage: content.backgroundImage ? `url(${content.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
+        {/* Background Overlay */}
+        {content.backgroundImage && (
+          <div 
+            className="absolute inset-0 opacity-50"
+            style={{ backgroundColor: content.backgroundColor }}
+          ></div>
+        )}
+        
         {/* Decorative Hearts */}
         {hearts}
 
@@ -158,7 +195,7 @@ const MothersAdTemplate = () => {
         </div>
 
         {/* Main Content */}
-        <div className="relative z-10 h-full flex flex-col justify-between p-8">
+        <div className="relative z-20 h-full flex flex-col justify-between p-8">
           {/* Header Section */}
           <div className="text-center space-y-6">
             {/* Main Heading */}

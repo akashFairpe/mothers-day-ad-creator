@@ -16,6 +16,7 @@ interface AdContent {
   ctaBackgroundColor: string;
   ctaTextColor: string;
   travelerImage: string;
+  backgroundImage: string;
 }
 
 const TravelAdTemplate = () => {
@@ -34,20 +35,21 @@ const TravelAdTemplate = () => {
     motivationalColor: "#ffffff", // White
     ctaBackgroundColor: "#fbbf24", // Yellow
     ctaTextColor: "#000000", // Black
-    travelerImage: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop&crop=face"
+    travelerImage: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=400&h=400&fit=crop&crop=face",
+    backgroundImage: ""
   });
 
   const handleContentChange = (field: keyof AdContent, value: string) => {
     setContent(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, imageType: 'travelerImage' | 'backgroundImage') => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
         const result = event.target?.result as string;
-        handleContentChange('travelerImage', result);
+        handleContentChange(imageType, result);
       };
       reader.readAsDataURL(file);
     }
@@ -119,7 +121,16 @@ const TravelAdTemplate = () => {
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={(e) => handleImageUpload(e, 'travelerImage')}
+                className="w-full p-2 border rounded-md"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Background Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageUpload(e, 'backgroundImage')}
                 className="w-full p-2 border rounded-md"
               />
             </div>
@@ -168,11 +179,23 @@ const TravelAdTemplate = () => {
         className="relative w-full h-[600px] rounded-lg shadow-soft overflow-hidden"
         style={{ 
           backgroundColor: content.backgroundColor,
-          border: `3px solid ${content.borderColor}`
+          border: `3px solid ${content.borderColor}`,
+          backgroundImage: content.backgroundImage ? `url(${content.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       >
+        {/* Background Overlay */}
+        {content.backgroundImage && (
+          <div 
+            className="absolute inset-0 bg-black opacity-30"
+            style={{ backgroundColor: `${content.backgroundColor}CC` }}
+          ></div>
+        )}
+        
         {/* Top Section - Title */}
-        <div className="text-center pt-8 pb-4">
+        <div className="relative z-10 text-center pt-8 pb-4">
           <h1 
             className="text-4xl font-bold tracking-wider"
             style={{ color: content.titleColor }}
@@ -189,8 +212,8 @@ const TravelAdTemplate = () => {
         </div>
 
         {/* Central Circle with Traveler Image */}
-        <div className="flex justify-center my-6">
-          <div 
+        <div className="relative z-10 flex justify-center my-6">
+          <div
             className="w-48 h-48 rounded-full overflow-hidden border-4"
             style={{ borderColor: content.borderColor }}
           >
@@ -204,7 +227,7 @@ const TravelAdTemplate = () => {
 
         {/* Discount Banner */}
         <div 
-          className="w-full py-4 my-6"
+          className="relative z-10 w-full py-4 my-6"
           style={{ backgroundColor: content.ctaBackgroundColor }}
         >
           <h3 
@@ -216,7 +239,7 @@ const TravelAdTemplate = () => {
         </div>
 
         {/* Motivational Line */}
-        <div className="px-8 text-center">
+        <div className="relative z-10 px-8 text-center">
           <p 
             className="text-sm font-bold tracking-wide leading-tight"
             style={{ color: content.motivationalColor }}
@@ -226,7 +249,7 @@ const TravelAdTemplate = () => {
         </div>
 
         {/* CTA Button */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <div 
             className="px-12 py-3 rounded-md shadow-lg cursor-pointer hover:scale-105 transition-transform"
             style={{ 
