@@ -216,10 +216,10 @@ const FitnessAdTemplate = () => {
             style={{ backgroundColor: content.textColor }}
           >
             <div 
-              className="text-white text-sm font-bold uppercase tracking-wider transform -rotate-90 whitespace-nowrap"
-              style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}
+              className="text-white text-sm font-bold uppercase tracking-wider"
+              style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
             >
-              {content.motivationText.split(' ').join(' ')}
+              {content.motivationText}
             </div>
           </div>
 
