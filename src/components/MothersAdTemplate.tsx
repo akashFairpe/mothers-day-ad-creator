@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { DndProvider, useDrop } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useDrop } from 'react-dnd';
 import tulipsImage from '@/assets/tulips-footer.jpg';
 import { DraggableElement, TextElement } from './DraggableElement';
 import { ControlPanel } from './ControlPanel';
@@ -179,8 +178,7 @@ const MothersAdTemplate = () => {
   ));
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto">
         <ControlPanel
           isEditing={isEditing}
           setIsEditing={setIsEditing}
@@ -248,8 +246,7 @@ const MothersAdTemplate = () => {
             </div>
           )}
         </div>
-      </div>
-    </DndProvider>
+    </div>
   );
 };
 
