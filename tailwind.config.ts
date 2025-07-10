@@ -61,7 +61,27 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				'mothers-day': {
+					pink: 'hsl(var(--mothers-day-pink))',
+					'pink-dark': 'hsl(var(--mothers-day-pink-dark))',
+					red: 'hsl(var(--mothers-day-red))',
+					'red-dark': 'hsl(var(--mothers-day-red-dark))',
+					gray: 'hsl(var(--mothers-day-gray))',
+					'gray-light': 'hsl(var(--mothers-day-gray-light))'
 				}
+			},
+			backgroundImage: {
+				'gradient-mothers-day': 'var(--gradient-mothers-day)',
+				'gradient-hearts': 'var(--gradient-hearts)'
+			},
+			boxShadow: {
+				'soft': 'var(--shadow-soft)',
+				'button': 'var(--shadow-button)'
+			},
+			fontFamily: {
+				'script': ['Dancing Script', 'cursive'],
+				'elegant': ['Playfair Display', 'serif']
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

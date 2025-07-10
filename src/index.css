@@ -38,6 +38,25 @@ All colors MUST be HSL.
 
     --radius: 0.5rem;
 
+    /* Mother's Day Theme Colors */
+    --mothers-day-pink: 330 100% 95%;
+    --mothers-day-pink-dark: 330 80% 85%;
+    --mothers-day-red: 350 90% 55%;
+    --mothers-day-red-dark: 350 85% 45%;
+    --mothers-day-gray: 0 0% 20%;
+    --mothers-day-gray-light: 0 0% 60%;
+
+    /* Gradients */
+    --gradient-mothers-day: linear-gradient(135deg, hsl(var(--mothers-day-pink)), hsl(var(--mothers-day-pink-dark)));
+    --gradient-hearts: radial-gradient(circle, hsl(var(--mothers-day-red) / 0.8), hsl(var(--mothers-day-red) / 0.3)));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(var(--mothers-day-red) / 0.1);
+    --shadow-button: 0 2px 8px hsl(var(--mothers-day-red) / 0.2));
+
+    /* Animations */
+    --transition-gentle: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
     --sidebar-background: 0 0% 98%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
